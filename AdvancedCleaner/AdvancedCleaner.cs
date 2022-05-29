@@ -104,50 +104,42 @@ namespace AdvancedCleaner
 
 		public void CleanEmptyVehicles(IRocketPlayer caller, float radius)
 		{
-			UnturnedPlayer p = (UnturnedPlayer)caller;
-			List<Transform> list = new List<Transform>();
-			int dvehicles = 0;
-			Vehicles.Where(v => v.passengers.All(pa => pa?.player == null)).Where(v =>
+			UnturnedPlayer player = (UnturnedPlayer)caller;
+			List<InteractableVehicle> vehiclesInRadius = Vehicles.Where(v => (v.transform.position - player.Position).sqrMagnitude <= Mathf.Pow(radius, 2) && !v.anySeatsOccupied).ToList();
+			int dvehicles = vehiclesInRadius.Count;
+			for (int v = vehiclesInRadius.Count - 1; v >= 0; v--)
 			{
-				return Vector3.Distance(v.transform.position, p.Position) <= radius;
-			})
-			.Select(v => v)
-			.ToList()
-			.ForEach(v =>
-			{
-				VehicleManager.askVehicleDestroy(v);
-				dvehicles++;
-			});
-			bool flag = list.Count > 0;
-			UnturnedChat.Say(caller, AdvancedCleaner.Instance.Translate("Successev", new object[]
-			{
-				radius,
-				dvehicles
-			}));
+				VehicleManager.askVehicleDestroy(vehiclesInRadius[v]);
+			}
+			if (dvehicles > 0)
+            {
+				UnturnedChat.Say(caller, Translate("Successev", radius, dvehicles));
+			}
+            else
+            {
+				UnturnedChat.Say(caller, Translate("Failv", radius));
+				return;
+            }
 		}
 
 		public void CleanVehicles(IRocketPlayer caller, float radius)
 		{
-			UnturnedPlayer p = (UnturnedPlayer)caller;
-			List<Transform> list = new List<Transform>();
-			int dvehicles = 0;
-			Vehicles.Where(v =>
+			UnturnedPlayer player = (UnturnedPlayer)caller;
+			List<InteractableVehicle> vehiclesInRadius = Vehicles.Where(v => (v.transform.position - player.Position).sqrMagnitude <= Mathf.Pow(radius, 2)).ToList();
+			int dvehicles = vehiclesInRadius.Count;
+			for (int v = vehiclesInRadius.Count - 1; v >= 0; v--)
 			{
-				return Vector3.Distance(v.transform.position, p.Position) <= radius;
-			})
-			.Select(v => v)
-			.ToList()
-			.ForEach(v =>
+				VehicleManager.askVehicleDestroy(vehiclesInRadius[v]);
+			}
+			if (dvehicles > 0)
 			{
-				VehicleManager.askVehicleDestroy(v);
-				dvehicles++;
-			});
-			bool flag = list.Count > 0;
-			UnturnedChat.Say(caller, AdvancedCleaner.Instance.Translate("Successv", new object[]
+				UnturnedChat.Say(caller, Translate("Successev", radius, dvehicles));
+			}
+			else
 			{
-				radius,
-				dvehicles
-			}));
+				UnturnedChat.Say(caller, Translate("Failv", radius));
+				return;
+			}
 		}
 
 		public void CleanBarricadesStructures(IRocketPlayer caller, float radius)
