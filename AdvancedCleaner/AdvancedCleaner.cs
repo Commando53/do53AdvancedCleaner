@@ -91,7 +91,7 @@ namespace AdvancedCleaner
 			return AdvancedCleaner.Structures;
 		}
 
-		public void i(IRocketPlayer caller, float radius)
+		public void Cleanitems(IRocketPlayer caller, float radius)
 		{
 			UnturnedPlayer p = (UnturnedPlayer)caller;
 			UnturnedChat.Say(caller, AdvancedCleaner.Instance.Translate("Successi", new object[]
@@ -102,7 +102,7 @@ namespace AdvancedCleaner
 			return;
 		}
 
-		public void ev(IRocketPlayer caller, float radius)
+		public void CleanEmptyVehicles(IRocketPlayer caller, float radius)
 		{
 			UnturnedPlayer p = (UnturnedPlayer)caller;
 			List<Transform> list = new List<Transform>();
@@ -126,7 +126,31 @@ namespace AdvancedCleaner
 			}));
 		}
 
-		public void bs(IRocketPlayer caller, float radius)
+		public void CleanVehicles(IRocketPlayer caller, float radius)
+		{
+			UnturnedPlayer p = (UnturnedPlayer)caller;
+			List<Transform> list = new List<Transform>();
+			int dvehicles = 0;
+			Vehicles.Where(v =>
+			{
+				return Vector3.Distance(v.transform.position, p.Position) <= radius;
+			})
+			.Select(v => v)
+			.ToList()
+			.ForEach(v =>
+			{
+				VehicleManager.askVehicleDestroy(v);
+				dvehicles++;
+			});
+			bool flag = list.Count > 0;
+			UnturnedChat.Say(caller, AdvancedCleaner.Instance.Translate("Successv", new object[]
+			{
+				radius,
+				dvehicles
+			}));
+		}
+
+		public void CleanBarricadesStructures(IRocketPlayer caller, float radius)
         {
 			UnturnedPlayer p = (UnturnedPlayer)caller;
 			List<Transform> list = new List<Transform>();
@@ -155,7 +179,7 @@ namespace AdvancedCleaner
 			return;
 		}
 
-		public void b(IRocketPlayer caller, float radius)
+		public void CleanBarricades(IRocketPlayer caller, float radius)
 		{
 			UnturnedPlayer p = (UnturnedPlayer)caller;
 			List<Transform> list = new List<Transform>();
@@ -183,7 +207,7 @@ namespace AdvancedCleaner
 			return;
 		}
 
-		public void s(IRocketPlayer caller, float radius)
+		public void CleanStructures(IRocketPlayer caller, float radius)
 		{
 			UnturnedPlayer p = (UnturnedPlayer)caller;
 			List<Transform> list = new List<Transform>();
@@ -211,7 +235,7 @@ namespace AdvancedCleaner
 			return;
 		}
 
-		public void uncbs(IRocketPlayer caller, float radius)
+		public void CleanUnclaimedBarricadesStructures(IRocketPlayer caller, float radius)
         {
 					UnturnedPlayer p = (UnturnedPlayer)caller;
 					List<Transform> list = new List<Transform>();
@@ -273,7 +297,7 @@ namespace AdvancedCleaner
 					return;
         }
 
-		public void uncb(IRocketPlayer caller, float radius)
+		public void CleanUnclaimedBarricades(IRocketPlayer caller, float radius)
 		{
 			UnturnedPlayer p = (UnturnedPlayer)caller;
 			List<Transform> list = new List<Transform>();
@@ -334,7 +358,7 @@ namespace AdvancedCleaner
 			return;
 		}
 
-		public void uncs(IRocketPlayer caller, float radius)
+		public void CleanUnclaimedStructures(IRocketPlayer caller, float radius)
 		{
 			UnturnedPlayer p = (UnturnedPlayer)caller;
 			List<Transform> list = new List<Transform>();
@@ -416,12 +440,12 @@ namespace AdvancedCleaner
 			return ClaimManager.checkCanBuild(Position, default(CSteamID), default(CSteamID), false);
         }
 
-		[RocketCommand("clean", "/clean <All|UncBS|UncB|UncS|BS|B|S|EV|I> (Radius)", "/clean <All|UncBS|UncB|UncS|BS|B|S|EV|I> (Radius)", AllowedCaller.Player)]
+		[RocketCommand("clean", "/clean <UncBS|UncB|UncS|BS|B|S|EV|V|I> (Radius)", "/clean <UncBS|UncB|UncS|BS|B|S|EV|V|I> (Radius)", AllowedCaller.Player)]
 		public void Execute(IRocketPlayer caller, string[] commands)
 		{
 			if (commands.Length < 1)
 			{
-				UnturnedChat.Say(caller, "Usage: /clean <All|UncBS|UncB|UncS|BS|B|S|EV|I> (Radius)");
+				UnturnedChat.Say(caller, "Usage: /clean <UncBS|UncB|UncS|BS|B|S|EV|V|I> (Radius)");
 				return;
 			}
 			var req = commands[0].ToLower();
@@ -430,7 +454,7 @@ namespace AdvancedCleaner
 				if (commands.Length < 2)
                 {
 					float radius = Configuration.Instance.DefaultRadius;
-					uncbs(caller, radius);
+					CleanUnclaimedBarricadesStructures(caller, radius);
 				}
                 else
                 {
@@ -441,7 +465,7 @@ namespace AdvancedCleaner
 					}
                     else
                     {
-						uncbs(caller, radius);
+						CleanUnclaimedBarricadesStructures(caller, radius);
 					}
                 }
 				}
@@ -450,7 +474,7 @@ namespace AdvancedCleaner
 				if (commands.Length < 2)
 				{
 					float radius = Configuration.Instance.DefaultRadius;
-					uncb(caller, radius);
+					CleanUnclaimedBarricades(caller, radius);
 				}
 				else
 				{
@@ -461,7 +485,7 @@ namespace AdvancedCleaner
 					}
 					else
 					{
-						uncb(caller, radius);
+						CleanUnclaimedBarricades(caller, radius);
 					}
 				}
 			}
@@ -470,7 +494,7 @@ namespace AdvancedCleaner
 				if (commands.Length < 2)
 				{
 					float radius = Configuration.Instance.DefaultRadius;
-					uncs(caller, radius);
+					CleanUnclaimedStructures(caller, radius);
 				}
 				else
 				{
@@ -481,7 +505,7 @@ namespace AdvancedCleaner
 					}
 					else
 					{
-						uncs(caller, radius);
+						CleanUnclaimedStructures(caller, radius);
 					}
 				}
 			}
@@ -490,7 +514,7 @@ namespace AdvancedCleaner
 				if (commands.Length < 2)
 				{
 					float radius = Configuration.Instance.DefaultRadius;
-					i(caller, radius);
+					Cleanitems(caller, radius);
 				}
 				else
 				{
@@ -501,7 +525,27 @@ namespace AdvancedCleaner
 					}
 					else
 					{
-						i(caller, radius);
+						Cleanitems(caller, radius);
+					}
+				}
+			}
+			else if (req == "v")
+			{
+				if (commands.Length < 2)
+				{
+					float radius = Configuration.Instance.DefaultRadius;
+					CleanVehicles(caller, radius);
+				}
+				else
+				{
+					if (!float.TryParse(commands[1], out float radius))
+					{
+						UnturnedChat.Say(caller, "Wrong Usage. You have to use a number for the radius.");
+						return;
+					}
+					else
+					{
+						CleanVehicles(caller, radius);
 					}
 				}
 			}
@@ -510,7 +554,7 @@ namespace AdvancedCleaner
 				if (commands.Length < 2)
 				{
 					float radius = Configuration.Instance.DefaultRadius;
-					ev(caller, radius);
+					CleanEmptyVehicles(caller, radius);
 				}
 				else
 				{
@@ -521,7 +565,7 @@ namespace AdvancedCleaner
 					}
 					else
 					{
-						ev(caller, radius);
+						CleanEmptyVehicles(caller, radius);
 					}
 				}
 			}
@@ -530,7 +574,7 @@ namespace AdvancedCleaner
 				if (commands.Length < 2)
 				{
 					float radius = Configuration.Instance.DefaultRadius;
-					bs(caller, radius);
+					CleanBarricadesStructures(caller, radius);
 				}
 				else
 				{
@@ -541,7 +585,7 @@ namespace AdvancedCleaner
 					}
 					else
 					{
-						bs(caller, radius);
+						CleanBarricadesStructures(caller, radius);
 					}
 				}
 				}
@@ -550,7 +594,7 @@ namespace AdvancedCleaner
 				if (commands.Length < 2)
 				{
 					float radius = Configuration.Instance.DefaultRadius;
-					b(caller, radius);
+					CleanBarricades(caller, radius);
 				}
 				else
 				{
@@ -561,7 +605,7 @@ namespace AdvancedCleaner
 					}
 					else
 					{
-						b(caller, radius);
+						CleanBarricades(caller, radius);
 					}
 				}
 			}
@@ -570,7 +614,7 @@ namespace AdvancedCleaner
 				if (commands.Length < 2)
 				{
 					float radius = Configuration.Instance.DefaultRadius;
-					s(caller, radius);
+					CleanStructures(caller, radius);
 				}
 				else
 				{
@@ -581,7 +625,7 @@ namespace AdvancedCleaner
 					}
 					else
 					{
-						s(caller, radius);
+						CleanStructures(caller, radius);
 					}
 				}
 			}
@@ -605,6 +649,7 @@ namespace AdvancedCleaner
 				translationList.Add("SuccessClaimeduncs", "\"{0}\" amount of unprotected Structures found in \"{1}\" radius and deleted.");
 				translationList.Add("FoundButClaimeduncs", "\"{0}\" amount of Structures found in \"{1}\" radius but was protected therefore not deleted.");
 				translationList.Add("Successev", "\"{1}\" amount of Empty Vehicles found in \"{0}\" radius and deleted.");
+				translationList.Add("Successv", "\"{1}\" amount of Vehicles found in \"{0}\" radius and deleted.");
 				translationList.Add("Successbs", "\"{0}\" amount of Barricade&Structure found in \"{1}\" radius and deleted.");
 				translationList.Add("Successb", "\"{0}\" amount of Barricades found in \"{1}\" radius and deleted.");
 				translationList.Add("Successs", "\"{0}\" amount of Structures found in \"{1}\" radius and deleted.");
