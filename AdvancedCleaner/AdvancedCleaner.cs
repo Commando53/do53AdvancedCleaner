@@ -426,6 +426,7 @@ namespace AdvancedCleaner
 			Logger.Log("AdvancedCleaner is now unloaded.", ConsoleColor.Yellow);
 		}
 
+		public static Transform Item;
 		public static bool IsClaim(Vector3 Position)
         {
 			return ClaimManager.checkCanBuild(Position, default(CSteamID), default(CSteamID), false);
