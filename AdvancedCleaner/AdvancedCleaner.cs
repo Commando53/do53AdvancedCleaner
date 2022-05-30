@@ -996,10 +996,15 @@ namespace AdvancedCleaner
 				}
 			}
 			else
-				{
-					UnturnedChat.Say(caller, "Wrong Usage. You have to use \"uncbs\" or \"bs\"");
-					return;
-				}
+			if (caller is ConsolePlayer)
+            {
+				Logger.Log("Wrong type. /clean <UncBS|UncB|UncS|BS|B|S|EV|V|I> (Radius)");
+			}
+			else
+			{
+				UnturnedChat.Say(caller, "Wrong type. /clean <UncBS|UncB|UncS|BS|B|S|EV|V|I> (Radius)");
+				return;
+			}
 
 		}
 
