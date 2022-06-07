@@ -343,6 +343,34 @@ namespace AdvancedCleaner
             }
 		}
 
+		public void CleanEmptyVehiclesID(IRocketPlayer caller, float radius, uint[] Id)
+		{
+			UnturnedPlayer player = (UnturnedPlayer)caller;
+			List<InteractableVehicle> vehiclesInRadius = Vehicles.Where(v => (v.transform.position - player.Position).sqrMagnitude <= Mathf.Pow(radius, 2) && !v.anySeatsOccupied).ToList();
+			int dvehicles = vehiclesInRadius.Count;
+			var check = 0;
+			for (int v = vehiclesInRadius.Count - 1; v >= 0; v--)
+			{
+				uint.TryParse(transform.name, out uint tname);
+				bool hasid = Id.Contains(tname);
+				if (hasid)
+				{
+					check++;
+					VehicleManager.askVehicleDestroy(vehiclesInRadius[v]);
+				}
+			}
+			if (check > 0)
+			{
+				UnturnedChat.Say(caller, Translate("Successevid", radius, check));
+			}
+			else
+			{
+				UnturnedChat.Say(caller, Translate("Failevid", radius));
+				return;
+			}
+		}
+
+
 		public void CleanEmptyVehiclesConsole(float radius)
 		{
 			transform.position = new Vector3(1.0f, 2.0f, 3.0f);
@@ -374,11 +402,39 @@ namespace AdvancedCleaner
 			}
 			if (dvehicles > 0)
 			{
-				UnturnedChat.Say(caller, Translate("Successev", radius, dvehicles));
+				UnturnedChat.Say(caller, Translate("Successv", radius, dvehicles));
 			}
 			else
 			{
 				UnturnedChat.Say(caller, Translate("Failv", radius));
+				return;
+			}
+		}
+
+
+		public void CleanVehiclesID(IRocketPlayer caller, float radius, uint[] Id)
+		{
+			UnturnedPlayer player = (UnturnedPlayer)caller;
+			List<InteractableVehicle> vehiclesInRadius = Vehicles.Where(v => (v.transform.position - player.Position).sqrMagnitude <= Mathf.Pow(radius, 2)).ToList();
+			int dvehicles = vehiclesInRadius.Count;
+			var check = 0;
+			for (int v = vehiclesInRadius.Count - 1; v >= 0; v--)
+			{
+				uint.TryParse(transform.name, out uint tname);
+				bool hasid = Id.Contains(tname);
+				if (hasid)
+                {
+					check++;
+					VehicleManager.askVehicleDestroy(vehiclesInRadius[v]);
+				}
+			}
+			if (check > 0)
+			{
+				UnturnedChat.Say(caller, Translate("Successvid", radius, check));
+			}
+			else
+			{
+				UnturnedChat.Say(caller, Translate("Failvid", radius));
 				return;
 			}
 		}
@@ -394,7 +450,7 @@ namespace AdvancedCleaner
 			}
 			if (dvehicles > 0)
 			{
-				Logger.Log(Translate("Successev", radius, dvehicles));
+				Logger.Log(Translate("Successv", radius, dvehicles));
 			}
 			else
 			{
@@ -1519,6 +1575,10 @@ namespace AdvancedCleaner
 				translationList.Add("Successbsid", "\"{0}\" amount of Barricade&Structure with specified id found in \"{1}\" radius and deleted.");
 				translationList.Add("Successbid", "\"{0}\" amount of Barricades with specified id found in \"{1}\" radius and deleted.");
 				translationList.Add("Successsid", "\"{0}\" amount of Structures with specified id found in \"{1}\" radius and deleted.");
+				translationList.Add("Successvid", "\"{1}\" amount of Vehicles with specified id found in \"{0}\" radius and deleted.");
+				translationList.Add("Failv", "There arent any Vehicles with specified id in \"{0}\" radius.");
+				translationList.Add("Successevid", "\"{1}\" amount of Empty Vehicles with specified id found in \"{0}\" radius and deleted.");
+				translationList.Add("Failev", "There arent any Empty Vehicles with specified id in \"{0}\" radius.");
 				return translationList;
 			}
 		}
