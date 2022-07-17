@@ -348,15 +348,15 @@ namespace AdvancedCleaner
 			UnturnedPlayer player = (UnturnedPlayer)caller;
 			List<InteractableVehicle> vehiclesInRadius = Vehicles.Where(v => (v.transform.position - player.Position).sqrMagnitude <= Mathf.Pow(radius, 2) && !v.anySeatsOccupied).ToList();
 			int dvehicles = vehiclesInRadius.Count;
-			var check = 0;
-			for (int v = vehiclesInRadius.Count - 1; v >= 0; v--)
+            var check = 0;
+            foreach (InteractableVehicle vehicle in vehiclesInRadius)
 			{
-				uint.TryParse(transform.name, out uint tname);
+				uint.TryParse(vehicle.transform.name, out uint tname);
 				bool hasid = Id.Contains(tname);
 				if (hasid)
 				{
 					check++;
-					VehicleManager.askVehicleDestroy(vehiclesInRadius[v]);
+					VehicleManager.askVehicleDestroy(vehicle);
 				}
 			}
 			if (check > 0)
@@ -418,14 +418,14 @@ namespace AdvancedCleaner
 			List<InteractableVehicle> vehiclesInRadius = Vehicles.Where(v => (v.transform.position - player.Position).sqrMagnitude <= Mathf.Pow(radius, 2)).ToList();
 			int dvehicles = vehiclesInRadius.Count;
 			var check = 0;
-			for (int v = vehiclesInRadius.Count - 1; v >= 0; v--)
+			foreach (InteractableVehicle vehicle in vehiclesInRadius)
 			{
-				uint.TryParse(transform.name, out uint tname);
+				uint.TryParse(vehicle.transform.name, out uint tname);
 				bool hasid = Id.Contains(tname);
 				if (hasid)
-                {
+				{
 					check++;
-					VehicleManager.askVehicleDestroy(vehiclesInRadius[v]);
+					VehicleManager.askVehicleDestroy(vehicle);
 				}
 			}
 			if (check > 0)
@@ -1362,7 +1362,7 @@ namespace AdvancedCleaner
 					float radius = Configuration.Instance.DefaultRadius;
 					CleanVehicles(caller, radius);
 				}
-				else
+				else if (commands.Length < 3)
 				{
 					if (!float.TryParse(commands[1], out float radius))
 					{
@@ -1373,6 +1373,24 @@ namespace AdvancedCleaner
 					{
 						CleanVehicles(caller, radius);
 					}
+				}
+				else if (commands.Length < 4)
+				{
+					if (!float.TryParse(commands[1], out float radius))
+					{
+						UnturnedChat.Say(caller, "Wrong Usage. You have to use a number for the radius.");
+						return;
+					}
+					if (!TryGetIDs(commands[2], out uint[] ids))
+					{
+						UnturnedChat.Say(caller, "Id's must be split by using commas. Example \"94,57\"");
+						return;
+					}
+					else
+					{
+						CleanVehiclesID(caller, radius, ids);
+					}
+					return;
 				}
 			}
 			else if (req == "ev")
@@ -1388,7 +1406,7 @@ namespace AdvancedCleaner
 					float radius = Configuration.Instance.DefaultRadius;
 					CleanEmptyVehicles(caller, radius);
 				}
-				else
+				else if (commands.Length < 3)
 				{
 					if (!float.TryParse(commands[1], out float radius))
 					{
@@ -1399,6 +1417,24 @@ namespace AdvancedCleaner
 					{
 						CleanEmptyVehicles(caller, radius);
 					}
+				}
+				else if (commands.Length < 4)
+				{
+					if (!float.TryParse(commands[1], out float radius))
+					{
+						UnturnedChat.Say(caller, "Wrong Usage. You have to use a number for the radius.");
+						return;
+					}
+					if (!TryGetIDs(commands[2], out uint[] ids))
+					{
+						UnturnedChat.Say(caller, "Id's must be split by using commas. Example \"94,57\"");
+						return;
+					}
+					else
+					{
+						CleanEmptyVehiclesID(caller, radius, ids);
+					}
+					return;
 				}
 			}
 			else if (req == "bs")
@@ -1579,6 +1615,8 @@ namespace AdvancedCleaner
 				translationList.Add("Failv", "There arent any Vehicles with specified id in \"{0}\" radius.");
 				translationList.Add("Successevid", "\"{1}\" amount of Empty Vehicles with specified id found in \"{0}\" radius and deleted.");
 				translationList.Add("Failev", "There arent any Empty Vehicles with specified id in \"{0}\" radius.");
+				translationList.Add("Failevid", "There arent any Empty Vehicles with specified id in \"{0}\" radius.");
+				translationList.Add("Failvid", "There arent any Vehicles with specified id in \"{0}\" radius.");
 				return translationList;
 			}
 		}
