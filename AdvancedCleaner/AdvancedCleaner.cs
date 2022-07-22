@@ -178,6 +178,81 @@ namespace AdvancedCleaner
 			return;
 		}
 
+		public void CleanUnclaimedBarricadesStructuresIDConsole(float radius, uint[] Id)
+		{
+
+			transform.position = new Vector3(1.0f, 2.0f, 3.0f);
+			List<Transform> list = new List<Transform>();
+			list = AdvancedCleaner.FindAll().FindAll((Transform x) => Vector3.Distance(transform.position, x.position) <= radius);
+			bool flag = list.Count > 0;
+			if (flag)
+			{
+				var check = 0;
+				List<Transform> cprotected = new List<Transform>();
+				foreach (Transform transform in list)
+				{
+					uint.TryParse(transform.name, out uint tname);
+					bool hasid = Id.Contains(tname);
+					if (hasid)
+					{
+						AdvancedCleaner.Item = transform;
+						check++;
+						if (AdvancedCleaner.IsClaim(transform.position))
+						{
+							BarricadeManager.damage(transform, 30000f, 1f, true, default(CSteamID), EDamageOrigin.Unknown);
+							StructureManager.damage(transform, Vector3.zero, 30000f, 1f, true, default(CSteamID), EDamageOrigin.Unknown);
+							cprotected.Add(transform);
+							if (check == list.Count)
+							{
+								Logger.Log(AdvancedCleaner.Instance.Translate("SuccessClaimeduncbsid", new object[]
+								{
+								cprotected.Count,
+								radius
+								}));
+								return;
+							}
+						}
+						else
+						{
+							if (cprotected.Count == 0 && check == list.Count)
+							{
+								Logger.Log(AdvancedCleaner.Instance.Translate("FoundButClaimeduncbsid", new object[]
+								{
+								list.Count,
+								radius
+								}));
+							}
+							else if (cprotected.Count != 0 && check == list.Count)
+							{
+								Logger.Log(AdvancedCleaner.Instance.Translate("SuccessClaimeduncbsid", new object[]
+								{
+								cprotected.Count,
+								radius
+								}));
+								return;
+							}
+						}
+					}
+					else
+					{
+						Logger.Log(AdvancedCleaner.Instance.Translate("Failid", new object[]
+						{
+						radius
+						}));
+					}
+				}
+				return;
+			}
+			else
+			{
+				Logger.Log(AdvancedCleaner.Instance.Translate("Fail", new object[]
+				{
+						radius
+				}));
+			}
+			return;
+		}
+
 		public void CleanUnclaimedBarricadesStructures(IRocketPlayer caller, float radius)
 		{
 			UnturnedPlayer p = (UnturnedPlayer)caller;
@@ -370,6 +445,33 @@ namespace AdvancedCleaner
 			}
 		}
 
+		public void CleanEmptyVehiclesIDConsole(float radius, uint[] Id)
+		{
+			transform.position = new Vector3(1.0f, 2.0f, 3.0f);
+			List<InteractableVehicle> vehiclesInRadius = Vehicles.Where(v => (transform.position - v.transform.position - transform.position).sqrMagnitude <= Mathf.Pow(radius, 2) && !v.anySeatsOccupied).ToList();
+			int dvehicles = vehiclesInRadius.Count;
+			var check = 0;
+			foreach (InteractableVehicle vehicle in vehiclesInRadius)
+			{
+				uint.TryParse(vehicle.transform.name, out uint tname);
+				bool hasid = Id.Contains(tname);
+				if (hasid)
+				{
+					check++;
+					VehicleManager.askVehicleDestroy(vehicle);
+				}
+			}
+			if (check > 0)
+			{
+				Logger.Log(Translate("Successevid", radius, check));
+			}
+			else
+			{
+				Logger.Log(Translate("Failevid", radius));
+				return;
+			}
+		}
+
 
 		public void CleanEmptyVehiclesConsole(float radius)
 		{
@@ -435,6 +537,33 @@ namespace AdvancedCleaner
 			else
 			{
 				UnturnedChat.Say(caller, Translate("Failvid", radius));
+				return;
+			}
+		}
+
+		public void CleanVehiclesIDConsole(float radius, uint[] Id)
+		{
+			transform.position = new Vector3(1.0f, 2.0f, 3.0f);
+			List<InteractableVehicle> vehiclesInRadius = Vehicles.Where(v => (transform.position - v.transform.position).sqrMagnitude <= Mathf.Pow(radius, 2)).ToList();
+			int dvehicles = vehiclesInRadius.Count;
+			var check = 0;
+			foreach (InteractableVehicle vehicle in vehiclesInRadius)
+			{
+				uint.TryParse(vehicle.transform.name, out uint tname);
+				bool hasid = Id.Contains(tname);
+				if (hasid)
+				{
+					check++;
+					VehicleManager.askVehicleDestroy(vehicle);
+				}
+			}
+			if (check > 0)
+			{
+				Logger.Log(Translate("Successvid", radius, check));
+			}
+			else
+			{
+				Logger.Log(Translate("Failvid", radius));
 				return;
 			}
 		}
@@ -506,6 +635,52 @@ namespace AdvancedCleaner
 			return;
 		}
 
+		public void CleanBarricadesStructuresIDConsole(float radius, uint[] Id)
+		{
+			transform.position = new Vector3(1.0f, 2.0f, 3.0f);
+			List<Transform> list = new List<Transform>();
+			list = AdvancedCleaner.FindAll().FindAll((Transform x) => Vector3.Distance(transform.position, x.position) <= radius);
+			bool flag = list.Count > 0;
+			if (flag)
+			{
+				var check = 0;
+				foreach (Transform transform in list)
+				{
+					uint.TryParse(transform.name, out uint tname);
+					bool hasid = Id.Contains(tname);
+					if (hasid)
+					{
+						check++;
+						BarricadeManager.damage(transform, 30000f, 1f, true, default(CSteamID), EDamageOrigin.Unknown);
+						StructureManager.damage(transform, Vector3.zero, 30000f, 1f, true, default(CSteamID), EDamageOrigin.Unknown);
+					}
+				}
+				if (check > 0)
+				{
+					Logger.Log(AdvancedCleaner.Instance.Translate("Successbsid", new object[]
+					{
+						list.Count,
+						radius
+					}));
+				}
+				else
+				{
+					Logger.Log(AdvancedCleaner.Instance.Translate("Fail", new object[]
+					{
+						radius
+					}));
+				}
+			}
+			else
+			{
+				Logger.Log(AdvancedCleaner.Instance.Translate("Failid", new object[]
+				{
+						radius
+				}));
+			}
+			return;
+		}
+
 		public void CleanBarricadesStructures(IRocketPlayer caller, float radius)
         {
 			UnturnedPlayer p = (UnturnedPlayer)caller;
@@ -562,14 +737,59 @@ namespace AdvancedCleaner
 				}));
 			}
 			return;
-		}
+        }
 
 
-		public void CleanBarricadesID(IRocketPlayer caller, float radius, uint[] Id)
+        public void CleanBarricadesID(IRocketPlayer caller, float radius, uint[] Id)
+        {
+            UnturnedPlayer p = (UnturnedPlayer)caller;
+            List<Transform> list = new List<Transform>();
+            list = AdvancedCleaner.FindAllB().FindAll((Transform x) => Vector3.Distance(p.Position, x.position) <= radius);
+            bool flag = list.Count > 0;
+            if (flag)
+            {
+                var check = 0;
+                foreach (Transform transform in list)
+                {
+                    uint.TryParse(transform.name, out uint tname);
+                    bool hasid = Id.Contains(tname);
+                    if (hasid)
+                    {
+                        check++;
+                        BarricadeManager.damage(transform, 30000f, 1f, true, default(CSteamID), EDamageOrigin.Unknown);
+                    }
+                }
+                if (check > 0)
+                {
+                    UnturnedChat.Say(caller, AdvancedCleaner.Instance.Translate("Successbid", new object[]
+                    {
+                        list.Count,
+                        radius
+                    }));
+                }
+                else
+                {
+                    UnturnedChat.Say(caller, AdvancedCleaner.Instance.Translate("Fail", new object[]
+                    {
+                        radius
+                    }));
+                }
+            }
+            else
+            {
+                UnturnedChat.Say(caller, AdvancedCleaner.Instance.Translate("Failid", new object[]
+                {
+                        radius
+                }));
+            }
+            return;
+        }
+
+		public void CleanBarricadesIDConsole(float radius, uint[] Id)
 		{
-			UnturnedPlayer p = (UnturnedPlayer)caller;
+			transform.position = new Vector3(1.0f, 2.0f, 3.0f);
 			List<Transform> list = new List<Transform>();
-			list = AdvancedCleaner.FindAllB().FindAll((Transform x) => Vector3.Distance(p.Position, x.position) <= radius);
+			list = AdvancedCleaner.FindAllB().FindAll((Transform x) => Vector3.Distance(transform.position, x.position) <= radius);
 			bool flag = list.Count > 0;
 			if (flag)
 			{
@@ -586,7 +806,7 @@ namespace AdvancedCleaner
 				}
 				if (check > 0)
 				{
-					UnturnedChat.Say(caller, AdvancedCleaner.Instance.Translate("Successbid", new object[]
+					Logger.Log(AdvancedCleaner.Instance.Translate("Successbid", new object[]
 					{
 						list.Count,
 						radius
@@ -594,7 +814,7 @@ namespace AdvancedCleaner
 				}
 				else
 				{
-					UnturnedChat.Say(caller, AdvancedCleaner.Instance.Translate("Fail", new object[]
+					Logger.Log(AdvancedCleaner.Instance.Translate("Fail", new object[]
 					{
 						radius
 					}));
@@ -602,7 +822,7 @@ namespace AdvancedCleaner
 			}
 			else
 			{
-				UnturnedChat.Say(caller, AdvancedCleaner.Instance.Translate("Failid", new object[]
+				Logger.Log(AdvancedCleaner.Instance.Translate("Failid", new object[]
 				{
 						radius
 				}));
@@ -731,6 +951,51 @@ namespace AdvancedCleaner
 			else
 			{
 				UnturnedChat.Say(caller, AdvancedCleaner.Instance.Translate("Failid", new object[]
+				{
+						radius
+				}));
+			}
+			return;
+		}
+
+		public void CleanStructuresIDConsole(float radius, uint[] Id)
+		{
+			transform.position = new Vector3(1.0f, 2.0f, 3.0f);
+			List<Transform> list = new List<Transform>();
+			list = AdvancedCleaner.FindAllS().FindAll((Transform x) => Vector3.Distance(transform.position, x.position) <= radius);
+			bool flag = list.Count > 0;
+			if (flag)
+			{
+				var check = 0;
+				foreach (Transform transform in list)
+				{
+					uint.TryParse(transform.name, out uint tname);
+					bool hasid = Id.Contains(tname);
+					if (hasid)
+					{
+						check++;
+						StructureManager.damage(transform, Vector3.zero, 30000f, 1f, true, default(CSteamID), EDamageOrigin.Unknown);
+					}
+				}
+				if (check > 0)
+				{
+					Logger.Log(AdvancedCleaner.Instance.Translate("Successsid", new object[]
+					{
+						list.Count,
+						radius
+					}));
+				}
+				else
+				{
+					Logger.Log(AdvancedCleaner.Instance.Translate("Fail", new object[]
+					{
+						radius
+					}));
+				}
+			}
+			else
+			{
+				Logger.Log(AdvancedCleaner.Instance.Translate("Failid", new object[]
 				{
 						radius
 				}));
@@ -902,6 +1167,79 @@ namespace AdvancedCleaner
 			return;
 		}
 
+		public void CleanUnclaimedBarricadesIDConsole(float radius, uint[] Id)
+		{
+
+			transform.position = new Vector3(1.0f, 2.0f, 3.0f);
+			List<Transform> list = new List<Transform>();
+			list = AdvancedCleaner.FindAllB().FindAll((Transform x) => Vector3.Distance(transform.position, x.position) <= radius);
+			bool flag = list.Count > 0;
+			if (flag)
+			{
+				var check = 0;
+				List<Transform> cprotected = new List<Transform>();
+				foreach (Transform transform in list)
+				{
+					uint.TryParse(transform.name, out uint tname);
+					bool hasid = Id.Contains(tname);
+					if (hasid)
+					{
+						AdvancedCleaner.Item = transform;
+						check++;
+						if (AdvancedCleaner.IsClaim(transform.position))
+						{
+							BarricadeManager.damage(transform, 30000f, 1f, true, default(CSteamID), EDamageOrigin.Unknown);
+							cprotected.Add(transform);
+							if (check == list.Count)
+							{
+								Logger.Log(AdvancedCleaner.Instance.Translate("SuccessClaimeduncbsid", new object[]
+								{
+								cprotected.Count,
+								radius
+								}));
+								return;
+							}
+						}
+						else
+						{
+							if (cprotected.Count == 0 && check == list.Count)
+							{
+								Logger.Log(AdvancedCleaner.Instance.Translate("FoundButClaimeduncbsid", new object[]
+								{
+								list.Count,
+								radius
+								}));
+							}
+							else if (cprotected.Count != 0 && check == list.Count)
+							{
+								Logger.Log(AdvancedCleaner.Instance.Translate("SuccessClaimeduncbsid", new object[]
+								{
+								cprotected.Count,
+								radius
+								}));
+								return;
+							}
+						}
+					}
+					else
+					{
+						Logger.Log(AdvancedCleaner.Instance.Translate("Failid", new object[]
+						{
+						radius
+						}));
+					}
+				}
+				return;
+			}
+			else
+			{
+				Logger.Log(AdvancedCleaner.Instance.Translate("Fail", new object[]
+				{
+						radius
+				}));
+			}
+			return;
+		}
 		public void CleanUnclaimedBarricades(IRocketPlayer caller, float radius)
 		{
 			UnturnedPlayer p = (UnturnedPlayer)caller;
@@ -1030,6 +1368,80 @@ namespace AdvancedCleaner
 			else
 			{
 				UnturnedChat.Say(caller, AdvancedCleaner.Instance.Translate("Fail", new object[]
+				{
+						radius
+				}));
+			}
+			return;
+		}
+
+		public void CleanUnclaimedStructuresIDConsole(float radius, uint[] Id)
+		{
+
+			transform.position = new Vector3(1.0f, 2.0f, 3.0f);
+			List<Transform> list = new List<Transform>();
+			list = AdvancedCleaner.FindAllS().FindAll((Transform x) => Vector3.Distance(transform.position, x.position) <= radius);
+			bool flag = list.Count > 0;
+			if (flag)
+			{
+				var check = 0;
+				List<Transform> cprotected = new List<Transform>();
+				foreach (Transform transform in list)
+				{
+					uint.TryParse(transform.name, out uint tname);
+					bool hasid = Id.Contains(tname);
+					if (hasid)
+					{
+						AdvancedCleaner.Item = transform;
+						check++;
+						if (AdvancedCleaner.IsClaim(transform.position))
+						{
+							StructureManager.damage(transform, Vector3.zero, 30000f, 1f, true, default(CSteamID), EDamageOrigin.Unknown);
+							cprotected.Add(transform);
+							if (check == list.Count)
+							{
+								Logger.Log(AdvancedCleaner.Instance.Translate("SuccessClaimeduncbsid", new object[]
+								{
+								cprotected.Count,
+								radius
+								}));
+								return;
+							}
+						}
+						else
+						{
+							if (cprotected.Count == 0 && check == list.Count)
+							{
+								Logger.Log(AdvancedCleaner.Instance.Translate("FoundButClaimeduncbsid", new object[]
+								{
+								list.Count,
+								radius
+								}));
+							}
+							else if (cprotected.Count != 0 && check == list.Count)
+							{
+								Logger.Log(AdvancedCleaner.Instance.Translate("SuccessClaimeduncbsid", new object[]
+								{
+								cprotected.Count,
+								radius
+								}));
+								return;
+							}
+						}
+					}
+					else
+					{
+						Logger.Log(AdvancedCleaner.Instance.Translate("Failid", new object[]
+						{
+						radius
+						}));
+					}
+				}
+				return;
+			}
+			else
+			{
+				Logger.Log(AdvancedCleaner.Instance.Translate("Fail", new object[]
 				{
 						radius
 				}));
@@ -1194,8 +1606,24 @@ namespace AdvancedCleaner
 				{
 				if(caller is ConsolePlayer)
                 {
-					float radius = 9999999999;
-					CleanUnclaimedBarricadesStructuresConsole(radius);
+					if(commands.Length > 2)
+                    {
+						float radius = 9999999999;
+						CleanUnclaimedBarricadesStructuresConsole(radius);
+					}
+					else if (commands.Length < 3)
+                    {
+						if (!TryGetIDs(commands[1], out uint[] ids))
+						{
+							Logger.Log("Id's must be split by using commas. Example \"1091,1092\"");
+							return;
+						}
+						else
+                        {
+							float radius = 9999999999;
+							CleanUnclaimedBarricadesStructuresIDConsole(radius, ids);
+                        }
+					}
 					return;
 				}
 				if (commands.Length < 2)
@@ -1239,8 +1667,24 @@ namespace AdvancedCleaner
 			{
 				if (caller is ConsolePlayer)
 				{
-					float radius = 9999999999;
-					CleanUnclaimedBarricadesConsole(radius);
+					if (commands.Length > 2)
+					{
+						float radius = 9999999999;
+						CleanUnclaimedBarricadesConsole(radius);
+					}
+					else if (commands.Length < 3)
+					{
+						if (!TryGetIDs(commands[1], out uint[] ids))
+						{
+							Logger.Log("Id's must be split by using commas. Example \"1091,1092\"");
+							return;
+						}
+						else
+						{
+							float radius = 9999999999;
+							CleanUnclaimedBarricadesIDConsole(radius, ids);
+						}
+					}
 					return;
 				}
 				if (commands.Length < 2)
@@ -1283,8 +1727,24 @@ namespace AdvancedCleaner
 			{
 				if (caller is ConsolePlayer)
 				{
-					float radius = 9999999999;
-					CleanUnclaimedStructuresConsole(radius);
+					if (commands.Length > 2)
+					{
+						float radius = 9999999999;
+						CleanUnclaimedStructuresConsole(radius);
+					}
+					else if (commands.Length < 3)
+					{
+						if (!TryGetIDs(commands[1], out uint[] ids))
+						{
+							Logger.Log("Id's must be split by using commas. Example \"1091,1092\"");
+							return;
+						}
+						else
+						{
+							float radius = 9999999999;
+							CleanUnclaimedStructuresIDConsole(radius, ids);
+						}
+					}
 					return;
 				}
 				if (commands.Length < 2)
@@ -1353,8 +1813,24 @@ namespace AdvancedCleaner
 			{
 				if (caller is ConsolePlayer)
 				{
-					float radius = 9999999999;
-					CleanVehiclesConsole(radius);
+					if (commands.Length > 2)
+					{
+						float radius = 9999999999;
+						CleanVehiclesConsole(radius);
+					}
+					else if (commands.Length < 3)
+					{
+						if (!TryGetIDs(commands[1], out uint[] ids))
+						{
+							Logger.Log("Id's must be split by using commas. Example \"1091,1092\"");
+							return;
+						}
+						else
+						{
+							float radius = 9999999999;
+							CleanVehiclesIDConsole(radius, ids);
+						}
+					}
 					return;
 				}
 				if (commands.Length < 2)
@@ -1397,8 +1873,24 @@ namespace AdvancedCleaner
 			{
 				if (caller is ConsolePlayer)
 				{
-					float radius = 9999999999;
-					CleanEmptyVehiclesConsole(radius);
+					if (commands.Length > 2)
+					{
+						float radius = 9999999999;
+						CleanEmptyVehiclesConsole(radius);
+					}
+					else if (commands.Length < 3)
+					{
+						if (!TryGetIDs(commands[1], out uint[] ids))
+						{
+							Logger.Log("Id's must be split by using commas. Example \"1091,1092\"");
+							return;
+						}
+						else
+						{
+							float radius = 9999999999;
+							CleanEmptyVehiclesIDConsole(radius, ids);
+						}
+					}
 					return;
 				}
 				if (commands.Length < 2)
@@ -1441,8 +1933,24 @@ namespace AdvancedCleaner
 				{
 				if (caller is ConsolePlayer)
 				{
-					float radius = 9999999999;
-					CleanBarricadesStructuresConsole(radius);
+					if (commands.Length > 2)
+					{
+						float radius = 9999999999;
+						CleanBarricadesStructuresConsole(radius);
+					}
+					else if (commands.Length < 3)
+					{
+						if (!TryGetIDs(commands[1], out uint[] ids))
+						{
+							Logger.Log("Id's must be split by using commas. Example \"1091,1092\"");
+							return;
+						}
+						else
+						{
+							float radius = 9999999999;
+							CleanBarricadesStructuresIDConsole(radius, ids);
+						}
+					}
 					return;
 				}
 				if (commands.Length < 2)
@@ -1485,8 +1993,24 @@ namespace AdvancedCleaner
 			{
 				if (caller is ConsolePlayer)
 				{
-					float radius = 9999999999;
-					CleanBarricadesConsole(radius);
+					if (commands.Length > 2)
+					{
+						float radius = 9999999999;
+						CleanBarricadesConsole(radius);
+					}
+					else if (commands.Length < 3)
+					{
+						if (!TryGetIDs(commands[1], out uint[] ids))
+						{
+							Logger.Log("Id's must be split by using commas. Example \"1091,1092\"");
+							return;
+						}
+						else
+						{
+							float radius = 9999999999;
+							CleanBarricadesIDConsole(radius, ids);
+						}
+					}
 					return;
 				}
 				if (commands.Length < 2)
@@ -1529,8 +2053,24 @@ namespace AdvancedCleaner
 			{
 				if (caller is ConsolePlayer)
 				{
-					float radius = 9999999999;
-					CleanStructuresConsole(radius);
+					if (commands.Length > 2)
+					{
+						float radius = 9999999999;
+						CleanStructuresConsole(radius);
+					}
+					else if (commands.Length < 3)
+					{
+						if (!TryGetIDs(commands[1], out uint[] ids))
+						{
+							Logger.Log("Id's must be split by using commas. Example \"1091,1092\"");
+							return;
+						}
+						else
+						{
+							float radius = 9999999999;
+							CleanStructuresIDConsole(radius, ids);
+						}
+					}
 					return;
 				}
 				if (commands.Length < 2)
