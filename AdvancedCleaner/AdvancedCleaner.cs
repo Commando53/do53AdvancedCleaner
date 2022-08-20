@@ -1606,7 +1606,7 @@ namespace AdvancedCleaner
 				{
 				if(caller is ConsolePlayer)
                 {
-					if(commands.Length > 2)
+					if(commands.Length < 2)
                     {
 						float radius = 9999999999;
 						CleanUnclaimedBarricadesStructuresConsole(radius);
@@ -1667,7 +1667,7 @@ namespace AdvancedCleaner
 			{
 				if (caller is ConsolePlayer)
 				{
-					if (commands.Length > 2)
+					if (commands.Length < 2)
 					{
 						float radius = 9999999999;
 						CleanUnclaimedBarricadesConsole(radius);
@@ -1727,7 +1727,7 @@ namespace AdvancedCleaner
 			{
 				if (caller is ConsolePlayer)
 				{
-					if (commands.Length > 2)
+					if (commands.Length < 2)
 					{
 						float radius = 9999999999;
 						CleanUnclaimedStructuresConsole(radius);
@@ -1813,7 +1813,7 @@ namespace AdvancedCleaner
 			{
 				if (caller is ConsolePlayer)
 				{
-					if (commands.Length > 2)
+					if (commands.Length < 2)
 					{
 						float radius = 9999999999;
 						CleanVehiclesConsole(radius);
@@ -1873,7 +1873,7 @@ namespace AdvancedCleaner
 			{
 				if (caller is ConsolePlayer)
 				{
-					if (commands.Length > 2)
+					if (commands.Length < 2)
 					{
 						float radius = 9999999999;
 						CleanEmptyVehiclesConsole(radius);
@@ -1933,7 +1933,7 @@ namespace AdvancedCleaner
 				{
 				if (caller is ConsolePlayer)
 				{
-					if (commands.Length > 2)
+					if (commands.Length < 2)
 					{
 						float radius = 9999999999;
 						CleanBarricadesStructuresConsole(radius);
@@ -1993,7 +1993,7 @@ namespace AdvancedCleaner
 			{
 				if (caller is ConsolePlayer)
 				{
-					if (commands.Length > 2)
+					if (commands.Length < 2)
 					{
 						float radius = 9999999999;
 						CleanBarricadesConsole(radius);
@@ -2053,7 +2053,7 @@ namespace AdvancedCleaner
 			{
 				if (caller is ConsolePlayer)
 				{
-					if (commands.Length > 2)
+					if (commands.Length < 2)
 					{
 						float radius = 9999999999;
 						CleanStructuresConsole(radius);
