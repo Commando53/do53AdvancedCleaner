@@ -1451,11 +1451,11 @@ namespace do53AdvancedCleaner
 							break;
 					}
 				}
-				else
+				else // no grouporowner
 				{
                     if (checkclaim)
                     {
-                        if (Id != null)
+                        if (Id != null) // check claim and sort by ids and clean
                         {
 							uint.TryParse(transform.name, out uint tname);
 							if (Id.Contains(tname))
@@ -1474,7 +1474,7 @@ namespace do53AdvancedCleaner
                                 }
 							}
 						}
-                        else
+                        else // check claim and clean
                         {
 							if (IsClaim(transform.position))
 							{
@@ -1492,7 +1492,7 @@ namespace do53AdvancedCleaner
                     }
                     else
                     {
-						if (Id != null)
+						if (Id != null) // sort by ids and clean
                         {
 							uint.TryParse(transform.name, out uint tname);
                             if (Id.Contains(tname))
@@ -1504,7 +1504,7 @@ namespace do53AdvancedCleaner
 								}
 							}
                         }
-                        else
+                        else // clean
                         {
 							checklist.Add(transform);
 							if (!confirmation)
