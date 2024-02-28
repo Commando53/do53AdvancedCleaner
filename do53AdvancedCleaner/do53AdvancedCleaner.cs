@@ -33,7 +33,7 @@ namespace do53AdvancedCleaner
 			ConfirmationGOO = new Dictionary<string, GROUPOROWNER>();
 			ConfirmationRadius = new Dictionary<string, float>();
 			ConfirmationIds = new Dictionary<string, uint[]>();
-			Logger.Log("do53AdvancedCleaner by Commando53 is activated.", ConsoleColor.Yellow);
+			Logger.Log("do53AdvancedCleaner (2.0.1) by Commando53 is activated.", ConsoleColor.Yellow);
 			Logger.Log("Thank you for downloading do53AdvancedCleaner.", ConsoleColor.Yellow);
 			Logger.Log("If you encounter anything working unexpectedly please report it to me through my discord.", ConsoleColor.Yellow);
 			Logger.Log("Discord: https://discord.gg/jnmpkxcV8c", ConsoleColor.Yellow);
@@ -526,17 +526,8 @@ namespace do53AdvancedCleaner
 						}
 						break;
 					case CLEAN.ITEM:
-						if(caller is ConsolePlayer)
-                        {
-							Logger.Log(Instance.Translate("Successi", new object[] { radius }));
-							ItemManager.askClearAllItems();
-						}
-                        else
-                        {
-							UnturnedPlayer p = (UnturnedPlayer)caller;
-							ItemManager.ServerClearItemsInSphere(p.Position, radius);
-							Logger.Log(Instance.Translate("Successi", new object[] { radius }));
-						}
+						Logger.Log(Instance.Translate("Successi", new object[] { radius }));
+						ItemManager.askClearAllItems();
 						break;
 					case CLEAN.V:
 						transform.position = new Vector3(1.0f, 2.0f, 3.0f);
@@ -1124,8 +1115,8 @@ namespace do53AdvancedCleaner
 						}
 						break;
 					case CLEAN.ITEM:
+						ItemManager.ServerClearItemsInSphere(p.Position, radius);
 						UnturnedChat.Say(caller, Instance.Translate("Successi", new object[] { radius }));
-						ItemManager.askClearAllItems();
 						break;
 					case CLEAN.V:
 						transform.position = p.Position;
